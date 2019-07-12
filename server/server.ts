@@ -24,13 +24,12 @@ export class Server{
                 })
                 
                 this.aplication.use(restify.plugins.queryParser())
+                this.aplication.use(restify.plugins.bodyParser())
 
                 //routers
                 for(let router of routers){
                     router.applyRouters(this.aplication)
                 }
-            
-
                 
                 this.aplication.listen(environmentes.server.porta, ()=>{
                     resolve(this.aplication)
