@@ -36,7 +36,7 @@ class UserRouter extends Router{
         })
 
         aplication.put('/users/:id', (req, resp, next)=>{
-            const options = {overwrite:true}
+            const options = {overwrite:true}  //used to indicate the old user will be replaced for new user
             User.update({_id:req.params.id}, req.body, options).exec().then(result=>{
                 if(result.n)
                     return User.findById(req.params.id)
@@ -45,6 +45,28 @@ class UserRouter extends Router{
             }).then(user=>{
                 resp.json(user)
                 return next()
+            })
+        })
+
+        aplication.patch('/users/:id', (req, resp, next)=>{
+            const options = {new: true} //used to indicate that the new user will be showed in resp.json and don't the old user
+            User.findByIdAndUpdate(req.params.id, req.body, options).then(user=>{
+                if(user){
+                    resp.json(user)
+                    return next()
+                }
+                else
+                    return resp.send(404)    
+            })
+        })
+
+        aplication.del('/users/:id', (req, resp, next)=>{
+            User.remove({_id: req.params.id}).exec().then((cmdResult: any)=>{
+                if(cmdResult.result.n)
+                    resp.send(204)
+                else
+                    resp.send(404)
+                return next()    
             })
         })
     }
