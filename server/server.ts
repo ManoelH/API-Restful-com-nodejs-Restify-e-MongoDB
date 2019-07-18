@@ -3,6 +3,7 @@ import { environmentes } from '../common/environment';
 import { Router } from '../common/router';
 import * as mongoose from 'mongoose';
 import { mergePatchBodyParser } from './merge-pacth.parser';
+import { handlerError } from './error.handler';
 
 
 export class Server{
@@ -36,6 +37,8 @@ export class Server{
                 this.aplication.listen(environmentes.server.porta, ()=>{
                     resolve(this.aplication)
                 })
+
+                this.aplication.on('restifyError', handlerError)
             }catch(error){
                 reject(error)
             }

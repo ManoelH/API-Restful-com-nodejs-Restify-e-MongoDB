@@ -1,5 +1,6 @@
 import { Router } from '../common/router';
 import * as restify from 'restify';
+import {NotFoundError} from 'restify-errors'
 import { User } from './users.model';
 
 
@@ -16,16 +17,16 @@ class UserRouter extends Router{
     applyRouters(aplication: restify.Server){
         
         aplication.get('/users', (req, resp, next)=>{
-            User.find().then(this.render(resp, next))
+            User.find().then(this.render(resp, next)).catch(next)
         })
 
         aplication.get('users/:id', (req, resp, next)=>{
-            User.findById(req.params.id).then(this.render(resp, next))
+            User.findById(req.params.id).then(this.render(resp, next)).catch(next)
         })
 
         aplication.post('/users', (req, resp, next)=>{
             let user = new User(req.body);
-            user.save().then(this.render(resp, next))
+            user.save().then(this.render(resp, next)).catch(next)
         })
 
         aplication.put('/users/:id', (req, resp, next)=>{
@@ -34,13 +35,13 @@ class UserRouter extends Router{
                 if(result.n)
                     return User.findById(req.params.id)
                 else
-                    resp.send(404)
-            }).then(this.render(resp, next))
+                    throw new NotFoundError('Document not found')
+            }).then(this.render(resp, next)).catch(next)
         })
 
         aplication.patch('/users/:id', (req, resp, next)=>{
             const options = {new: true} //used to indicate that the new user will be showed in resp.json and don't the old user
-            User.findByIdAndUpdate(req.params.id, req.body, options).then(this.render(resp, next))
+            User.findByIdAndUpdate(req.params.id, req.body, options).then(this.render(resp, next)).catch(next)
         })
 
         aplication.del('/users/:id', (req, resp, next)=>{
@@ -48,9 +49,9 @@ class UserRouter extends Router{
                 if(cmdResult.result.n)
                     resp.send(204)
                 else
-                    resp.send(404)
+                    throw new NotFoundError('Document not found')
                 return next()    
-            })
+            }).catch(next)
         })
     }
 

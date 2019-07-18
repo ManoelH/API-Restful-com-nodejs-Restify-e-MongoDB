@@ -1,5 +1,6 @@
 import * as restify from 'restify';
 import { EventEmitter } from 'events'
+import { NotFoundError } from 'restify-errors';
 
 export abstract class Router extends EventEmitter{
     abstract applyRouters(aplication: restify.Server)
@@ -13,7 +14,7 @@ export abstract class Router extends EventEmitter{
             }
             
             else
-                response.send(404)
+                throw new NotFoundError('Document not found')
             return next()
         }
     }
