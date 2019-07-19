@@ -1,5 +1,7 @@
 import * as mongoose from 'mongoose';
 import { validateCPF } from '../common/validators';
+import * as bcrypt from 'bcrypt'
+import { environmentes } from '../common/environment';
 
 export interface User extends mongoose.Document{
     name: string,
@@ -40,4 +42,18 @@ const userSchema = new  mongoose.Schema({
     }
 
 })
+
+    userSchema.pre('save', function(next){ //to use traditional functions to keep this = query object
+        const user: User = this
+        if(!user.isModified('password'))
+            next
+        else{
+            bcrypt.hash(user.password, environmentes.security.saltRounds)
+            .then(hash=>{
+                user.password = hash
+                next()
+            }).catch(next)
+        }
+    })
+
     export const User = mongoose.model<User>('User', userSchema)
