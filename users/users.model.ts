@@ -43,17 +43,31 @@ const userSchema = new  mongoose.Schema({
 
 })
 
-    userSchema.pre('save', function(next){ //to use traditional functions to keep this = query object
+    const hashPasswoord = (obj, next)=>{
+        bcrypt.hash(obj.password, environmentes.security.saltRounds)
+        .then(hash=>{
+            obj.password = hash
+            next()
+        }).catch(next)
+    }
+
+    const saveMiddleware = function(next){ //to use traditional functions to keep this = object document
         const user: User = this
         if(!user.isModified('password'))
             next
-        else{
-            bcrypt.hash(user.password, environmentes.security.saltRounds)
-            .then(hash=>{
-                user.password = hash
-                next()
-            }).catch(next)
-        }
-    })
+        else
+            hashPasswoord(user, next)
+    }
+
+    const updateMiddleware = function(next){
+        if(!this.getUpdate().password)
+            next
+        else
+            hashPasswoord(this.getUpdate(), next)
+    }
+
+    userSchema.pre('save', saveMiddleware)
+    userSchema.pre('findOneAndUpdate', updateMiddleware)
+    userSchema.pre('update', updateMiddleware)
 
     export const User = mongoose.model<User>('User', userSchema)

@@ -30,7 +30,7 @@ class UserRouter extends Router{
         })
 
         aplication.put('/users/:id', (req, resp, next)=>{
-            const options = {overwrite:true}  //used to indicate the old user will be replaced for new user
+            const options = {runValidators:true, overwrite:true}  //'runValidator'it will be used validations, 'overwrite' used to indicate the old user will be replaced for new user
             User.update({_id:req.params.id}, req.body, options).exec().then(result=>{
                 if(result.n)
                     return User.findById(req.params.id)
@@ -40,7 +40,7 @@ class UserRouter extends Router{
         })
 
         aplication.patch('/users/:id', (req, resp, next)=>{
-            const options = {new: true} //used to indicate that the new user will be showed in resp.json and don't the old user
+            const options = {runValidators:true, new: true} //'new' used to indicate that the new user will be showed in resp.json and don't the old user
             User.findByIdAndUpdate(req.params.id, req.body, options).then(this.render(resp, next)).catch(next)
         })
 
