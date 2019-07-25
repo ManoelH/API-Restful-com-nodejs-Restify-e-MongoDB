@@ -16,7 +16,7 @@ class UserRouter extends ModelRouter<User>{
     applyRouters(aplication: restify.Server){
         
         aplication.get('/users', this.findAll)
-        aplication.get('users/:id', [this.validateId, this.findById])
+        aplication.get('/users/:id', [this.validateId, this.findById])
         aplication.post('/users', this.save)
         aplication.put('/users/:id', [this.validateId, this.replace])
         aplication.patch('/users/:id', [this.validateId, this.update])
