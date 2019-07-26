@@ -54,14 +54,14 @@ const userSchema = new  mongoose.Schema({
     const saveMiddleware = function(next){ //to use traditional functions to keep this = object document
         const user: User = this
         if(!user.isModified('password'))
-            next
+            return next()
         else
             hashPasswoord(user, next)
     }
 
     const updateMiddleware = function(next){
         if(!this.getUpdate().password)
-            next
+            return next()
         else
             hashPasswoord(this.getUpdate(), next)
     }
