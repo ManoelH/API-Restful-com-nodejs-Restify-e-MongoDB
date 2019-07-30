@@ -5,12 +5,21 @@ import { Review } from '../reviews/reviews.model';
 
 export abstract class ModelRouter<D extends mongoose.Document> extends Router{
 
+    basepath: string
+
     constructor(protected model: mongoose.Model<D>) {
         super();
+        this.basepath = `/${this.model.collection.name}`
     }
 
     protected prepereOne(query: mongoose.DocumentQuery<D, D>): mongoose.DocumentQuery<D, D>{
         return query
+    }
+
+    envelope(document: any):any{
+        let resource = Object.assign({_links:{}}, document.toJSON())
+        resource._links.self = `${this.basepath}/${resource._id}`
+        return resource
     }
 
     validateId = (req, resp, next)=>{

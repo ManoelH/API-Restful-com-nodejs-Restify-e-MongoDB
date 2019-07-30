@@ -15,6 +15,13 @@ class ReviewRouter extends ModelRouter<Review>{
         })
     }
 
+    envelope(document){
+        let resource = super.envelope(document)
+        const restId = document.restaurant._id ? document.restaurant._id : document.restaurant
+        resource._links.restaurant = `/restaurants/${restId}`
+        return resource
+    }
+
     //overwrite
     protected prepereOne(query: mongoose.DocumentQuery<Review, Review>): mongoose.DocumentQuery<Review, Review>{
         return query.populate('user', 'name')
@@ -29,9 +36,9 @@ class ReviewRouter extends ModelRouter<Review>{
     // }
 
     applyRouters(aplication: restify.Server){
-        aplication.get('/reviews', this.findAll)
-        aplication.get('/reviews/:id', [this.validateId, this.findById])
-        aplication.post('/reviews', this.save)
+        aplication.get(`${this.basepath}`, this.findAll)
+        aplication.get(`${this.basepath}/:id`, [this.validateId, this.findById])
+        aplication.post(`${this.basepath}`, this.save)
     }
 }
 
