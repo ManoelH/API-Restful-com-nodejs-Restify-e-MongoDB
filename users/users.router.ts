@@ -13,6 +13,7 @@ class UserRouter extends ModelRouter<User>{
         })
     }
 
+    
     findEmail = (req, resp, next)=>{
         if(req.query.email){
             User.findByEmail(req.query.email)
